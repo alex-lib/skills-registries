@@ -743,24 +743,74 @@ jobs:
       - run: npm install js-yaml
 
       - name: Basic install test
-      - run: |
+        run: |
           npx -y skills add . --list
           npx -y skills add . --skill poc-alpha --agent claude-code --copy -y
           test -f .claude/skills/poc-alpha/SKILL.md || test -f .agents/skills/poc-alpha/SKILL.md
 
       - name: Validate SKILL.md schema
-      - run: node scripts/validate-skills.js
+        run: node scripts/validate-skills.js
 
       - name: Custom policy scan
-      - run: node scripts/policy-scan.js
+        run: node scripts/policy-scan.js
 
       - name: Secret scan
-      - run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.0_linux_x64.tar.gz | tar -xz
+        run: |
+          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | grep '"tag_name"' \
+            | sed -E 's/.*"v([^"]+)".*/\1/')
+
+          curl -fsSL \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            -o gitleaks.tar.gz
+
+          tar -xzf gitleaks.tar.gz
           ./gitleaks detect --source . --verbose
 
       - name: Generate catalog
-      - run: node scripts/generate-catalog.js
+        run: node scripts/generate-catalog.js
 ```
 
+Два способа запуска:
+1. act — запуск GitHub Actions локально (рекомендуется):
+
+```shell
+brew install act
+act -j validate-skills ##
+```
+Выполнит все шаги workflow прямо на Mac, эмулируя ubuntu-latest через Docker.
+
+2. Ручное воспроизведение шагов:
+
+# ставим зависимость
+```shell
+npm install js-yaml
+```
+
+# проверяем schema
+```shell
+node scripts/validate-skills.js
+```
+
+# проверяем policy
+```shell
+node scripts/policy-scan.js
+```
+
+# проверяем секреты
+```shell
+curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.0_darwin_arm64.tar.gz | tar -xz
+./gitleaks detect --source . --verbose
+```
+
+# генерируем каталог
+```shell
+node scripts/generate-catalog.js
+```
+
+# проверяем установку
+```shell
+npx -y skills add . --skill poc-alpha --agent claude-code --copy -y
+test -f .claude/skills/poc-alpha/SKILL.md || test -f .agents/skills/poc-alpha/SKILL.md
+```
 ---

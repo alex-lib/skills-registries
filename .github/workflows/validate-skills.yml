@@ -23,7 +23,15 @@ jobs:
 
       - name: Secret scan
         run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.0_linux_x64.tar.gz | tar -xz
+          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | grep '"tag_name"' \
+            | sed -E 's/.*"v([^"]+)".*/\1/')
+          
+          curl -fsSL \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            -o gitleaks.tar.gz
+          
+          tar -xzf gitleaks.tar.gz
           ./gitleaks detect --source . --verbose
 
       - name: Generate catalog
