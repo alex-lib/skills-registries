@@ -1,0 +1,30 @@
+name: validate-skills
+on: [pull_request]
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    container: node:22
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install js-yaml
+
+      - name: Basic install test
+        run: |
+          npx -y skills add . --list
+          npx -y skills add . --skill poc-alpha --agent claude-code --copy -y
+          test -f .claude/skills/poc-alpha/SKILL.md || test -f .agents/skills/poc-alpha/SKILL.md
+
+      - name: Validate SKILL.md schema
+        run: node scripts/validate-skills.js
+
+      - name: Custom policy scan
+        run: node scripts/policy-scan.js
+
+      - name: Secret scan
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.0_linux_x64.tar.gz | tar -xz
+          ./gitleaks detect --source . --verbose
+
+      - name: Generate catalog
+        run: node scripts/generate-catalog.js
