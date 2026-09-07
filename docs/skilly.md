@@ -8,9 +8,9 @@
 
 Именно поэтому тестировать Skilly нужно не как «CLI поставил файл», а как полноценный внутренний сервис: с базой, воркером, антивирусом и процессом ревью.
 
-## Что проверяем
+## Два flow
 
-Нужно протестировать **два независимых потока**, потому что это две разные роли в системе:
+**Два независимых flow**:
 
 **Поток потребителя (сотрудник ставит готовый скилл):**
 ```
@@ -26,8 +26,6 @@ developer -> proposal/publish -> review -> scan -> approved version
 ```
 Разработчик не может просто "залить" скилл всем — он проходит через **review** (человеческое одобрение) и **scan** (автоматическая проверка безопасности, в т.ч. антивирусом) прежде, чем версия становится доступна для установки.
 
-Оба потока нужно пройти руками от начала до конца — не полагаться на то, что "раз страница открылась, значит работает".
-
 ## Prerequisites
 
 Перед началом убедитесь, что установлено:
@@ -42,17 +40,17 @@ developer -> proposal/publish -> review -> scan -> approved version
 Установка node в случае отсутсвия на mac: `brew install node@20` затем `brew link --overwrite --force node@20` (если была другая версия node или конфликт симлинков). Проект требует именно Node.js ≥ 20.
 
 Включить pnpm через corepack (встроенный менеджер версий пакетных менеджеров в Node.js — гарантирует, что у всех в команде совпадает версия pnpm):
-```
+```shell
 corepack enable pnpm
 ```
 
 Получить исходники Skilly из официального repository:
-```
+```text
 https://github.com/scalefocus/skilly
 ```
 
 После clone поставить все зависимости monorepo одной командой:
-```
+```shell
 pnpm install
 ```
 
@@ -75,12 +73,12 @@ pnpm --filter @skilly/shared build
 Это вариант "как в проде, только на ноутбуке" — поднимает весь стек контейнерами разом, без ручной настройки каждого сервиса. Рекомендуется как первый проход, чтобы увидеть систему целиком, прежде чем разбирать её на части (раздел 4.4).
 
 Скопировать шаблон переменных окружения:
-```
+```shell
 cp deploy/.env.example deploy/.env
 ```
 
 Заполнить `.env` (пароли БД, ключи S3, секреты сессии и т.д. — конкретный список смотрите в самом файле-шаблоне, он идёт с комментариями), затем поднять весь стек:
-```
+```shell
 docker compose -f deploy/docker-compose.yml up --build
 ```
 
@@ -99,7 +97,7 @@ docker compose -f deploy/docker-compose.yml up --build
 Дождитесь, пока все контейнеры перейдут в статус healthy (смотрите вывод `docker compose ps` или логи — миграции и антивирусная база ClamAV могут стартовать не мгновенно).
 
 Дефолтный dev-прокси слушает на:
-```
+```text
 http://localhost:8080
 ```
 
@@ -112,7 +110,7 @@ http://localhost:8080
 **Порядок важен** — БД должна быть поднята и заполнена до старта web/worker, иначе они не смогут подключиться.
 
 #### Поднять Postgres
-```
+```shell
 docker run -d --name skilly-pg \
   -e POSTGRES_PASSWORD=test \
   -e POSTGRES_USER=skilly \
@@ -121,7 +119,7 @@ docker run -d --name skilly-pg \
 ```
 
 #### Поднять MinIO
-```
+```shell
 docker run -d --name skilly-minio \
   -e MINIO_ROOT_USER=skilly \
   -e MINIO_ROOT_PASSWORD=skillyminio \
@@ -133,7 +131,7 @@ docker run -d --name skilly-minio \
 Зайти на `http://localhost:9001` (логин/пароль — те, что задали выше: `skilly` / `skillyminio`) и создать bucket `skilly-artifacts`.
 
 #### Применить миграции и тестовые данные (seed)
-```
+```shell
 cd skilly
 
 for f in db/migrations/*.sql; do
@@ -149,7 +147,7 @@ docker exec -i skilly-pg \
 #### Настроить конфигурацию web-приложения
 
 Создать файл `skilly/packages/web/.env.local`:
-```
+```shell
 cat > packages/web/.env.local << 'EOF'
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=dev-only-secret
@@ -173,7 +171,7 @@ EOF
 #### Запустить web и worker (в двух отдельных терминалах)
 
 Terminal 1 — веб-приложение:
-```
+```shell
 pnpm --filter @skilly/web dev
 ```
 
@@ -181,7 +179,7 @@ Terminal 2 — фоновый воркер (публикации, сканиро
 Worker запускается через `tsx watch --env-file-if-exists=.env.local` — он **ожидает файл `.env.local`**, а не переменные, переданные инлайн перед командой (на практике инлайн-переменные не долетают до процесса и приводят к ошибке `SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string`, потому что `DATABASE_URL` оказывается пустым).
 
 Создайте `packages/worker/.env.local`:
-```bash
+```shell
 cat > packages/worker/.env.local << 'EOF'
 GIT_REPO_ROOT=./data/git
 DATABASE_URL=postgres://skilly:test@127.0.0.1:5432/skilly
@@ -194,7 +192,7 @@ EOF
 ```
 
 Terminal 2:
-```bash
+```shell
 cd packages/worker
 npm run dev
 ```
@@ -207,7 +205,7 @@ npm run dev
 
 1. Создать адаптированную копию Caddyfile (не трогаем оригинальный deploy/Caddyfile — он нужен как есть для полного docker compose up из раздела 4.3):
 
-```bash
+```shell
 cp deploy/Caddyfile deploy/Caddyfile.dev-manual
 sed -i '' 's/worker:4000/host.docker.internal:4000/g; s/web:3000/host.docker.internal:3000/g' deploy/Caddyfile.dev-manual
 ```
@@ -216,7 +214,7 @@ sed -i '' 's/worker:4000/host.docker.internal:4000/g; s/web:3000/host.docker.int
 
 2. Поднять только Caddy отдельным контейнером, не трогая остальной compose-стек:
 
-```bash
+```shell
 docker run -d --name skilly-proxy \
 -p 8080:8080 \
 -v "$(pwd)/deploy/Caddyfile.dev-manual:/etc/caddy/Caddyfile:ro" \
@@ -225,7 +223,7 @@ caddy:2-alpine
 
 3. Обновить packages/web/.env.local, чтобы сгенерированные install-ссылки и NextAuth callback указывали на прокси, а не напрямую на 3000:
 
-```bash
+```shell
 sed -i '' \
 -e 's|NEXTAUTH_URL=.*|NEXTAUTH_URL=http://localhost:8080|' \
 -e 's|SKILLY_REGISTRY_URL=.*|SKILLY_REGISTRY_URL=http://localhost:8080|' \
@@ -234,19 +232,19 @@ packages/web/.env.local
 
 Проверьте результат:
 
-```bash
+```shell
 cat packages/web/.env.local
 ````
 
 Проверить, что Caddy правильно маршрутизирует оба типа запросов:
 
-```bash
+```shell
 # должен уйти на worker и ответить git-протоколом, а не 404 от Next.js
 curl -v "http://localhost:8080/global/poc-alpha.git/info/refs?service=git-upload-pack"
 ```
 
 # должен уйти на web и вернуть обычную HTML-страницу каталога
-```bash
+```shell
 curl -sI "http://localhost:8080/"
 ```
 
@@ -265,7 +263,7 @@ http://localhost:3000/api/auth/signin
 
 ## Операции, которые надо пройти в UI
 
-![img.png](img.png)
+![img.png](pics/img.png)
 
 Не ограничивайтесь тем, что страница открылась — это самая частая ошибка при PoC-тестировании: "зашёл, увидел дашборд, отметил PoC как успешный". Ниже — полный сценарий сквозного прохождения обоих потоков из 4.1, с пояснением, зачем нужен каждый шаг и что считать успехом (PASS).
 
@@ -290,7 +288,7 @@ http://localhost:3000/api/auth/signin
 14. **Проверить install count.** Убедиться, что система считает установки и связывает их с конкретным пользователем/токеном — это именно то, что рекламируется как "attributed installs" в описании продукта.
 
 Consumer command должна иметь форму:
-```
+```shell
 npx skills add \
   https://x-access-token:<token>@<skilly-host>/<namespace>/<skill>.git#v1.0.0
 ```
@@ -364,7 +362,7 @@ SKILLY_COOKIE="ВАШИ cookie КОТОРЫЕ МОЖНО ВЗЯТЬ ИЗ ЛЮБ�
 
 Выгрузка займет время, что говорит о том, что Skilly пока не совершенен в плане загрузки batch скиллов.
 
-### 4.7.3 Проверить поиск по каталогу
+### Проверить поиск по каталогу
 
 Цель: Проверить работу поиска скилла при наличии 1000 skills.
 
@@ -385,6 +383,6 @@ SKILLY_COOKIE="ВАШИ cookie КОТОРЫЕ МОЖНО ВЗЯТЬ ИЗ ЛЮБ�
 - результат находится;
 - UI не зависает;
 
-### 4.7.4 Проверить фильтрацию по namespace и tags
+### Проверить фильтрацию по namespace и tags
 
 Цель: Проверить работу фильтров при большом количестве skills.
