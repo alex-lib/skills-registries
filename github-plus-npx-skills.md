@@ -1,8 +1,6 @@
-# registry-skills-github-npx-skills
+## GitLab/GitHub + `npx skills`
 
 Создание централизованного хранилища скиллов по схеме: GitLab/GitHub + `npx skills`.
-
-## Базовая архитектура: GitLab/GitHub + `npx skills`
 
 ### Из чего состоит
 
