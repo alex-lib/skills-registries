@@ -1,5 +1,7 @@
 # SkillReg
 
+---
+
 Создание централизованного хранилища через SkillReg.
 
 ## Prerequisites

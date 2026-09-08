@@ -1,5 +1,7 @@
 # GitLab + RoleCraft
 
+---
+
 Создание централизованного хранилища скиллов по схеме: GitLab/GitHub + RoleCraft.
 
 Это **тот же центральный GitLab/GitHub**, но другой installer.
