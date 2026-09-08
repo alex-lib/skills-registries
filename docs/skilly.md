@@ -236,6 +236,11 @@ packages/web/.env.local
 cat packages/web/.env.local
 ```
 
+Перезапустить приложение:
+```shell
+pnpm --filter @skilly/web dev
+```
+
 Проверить, что Caddy правильно маршрутизирует оба типа запросов:
 
 ```shell
