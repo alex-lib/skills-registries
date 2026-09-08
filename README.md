@@ -467,7 +467,7 @@ https://skillreg.dev/docs
 6. **Настройка CI/CD** — выдаются CI-токены для автоматической публикации новых версий скилов из pipeline (например, при мерже в main-ветку git-репозитория автоматически вызывается `skillreg push`).
 
 Необходимо понимать, что возможности приложения ограничиваются несколькими уровнями подписок (на 08.11.2026):
-![img.png](docs/pics/skillreg-subscriptions.png)![img.png](docs/pics/skilly-navigate.png)
+![img.png](docs/pics/skillreg-subscriptions.png)
 
 #### Как разработчику обновить скилл
 
