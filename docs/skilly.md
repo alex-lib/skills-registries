@@ -37,7 +37,7 @@ developer -> proposal/publish -> review -> scan -> approved version
 | Git | Для клонирования исходников и работы самого registry с git-репозиториями скиллов                                                                                                                                 |
 | Docker | Для поднятия инфраструктурных зависимостей (Postgres, MinIO, ClamAV) — либо всё сразу через `docker compose`, либо отдельными контейнерами (см. 4.4)                                                             |
 
-Установка node в случае отсутсвия на mac: `brew install node@20` затем `brew link --overwrite --force node@20` (если была другая версия node или конфликт симлинков). Проект требует именно Node.js ≥ 20.
+Установка node в случае отсутствия на mac: `brew install node@20` затем `brew link --overwrite --force node@20` (если была другая версия node или конфликт симлинков). Проект требует именно Node.js ≥ 20.
 
 Включить pnpm через corepack (встроенный менеджер версий пакетных менеджеров в Node.js — гарантирует, что у всех в команде совпадает версия pnpm):
 ```shell
@@ -234,7 +234,7 @@ packages/web/.env.local
 
 ```shell
 cat packages/web/.env.local
-````
+```
 
 Проверить, что Caddy правильно маршрутизирует оба типа запросов:
 

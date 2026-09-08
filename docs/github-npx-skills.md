@@ -1,4 +1,4 @@
-## GitLab/GitHub + `npx skills`
+# GitLab/GitHub + `npx skills`
 
 ---
 
@@ -10,7 +10,7 @@
 
 - **GitLab/GitHub** — централизованное хранилище исходников skills, история, ветки, Merge Requests, CODEOWNERS, permissions, tags/releases.
 
-- `**skills**` **от Vercel** — open-source CLI для поиска skills в git-источнике и установки их в локальные директории AI-агентов ( `**npx skills add <repository>**`).
+- `skills` от Vercel — open-source CLI для поиска skills в git-источнике и установки их в локальные директории AI-агентов ( `npx skills add <repository>`).
 
 Пример команд CLI-инструмента `skills`:
 
@@ -143,7 +143,7 @@ npx skills add <repository> --skill '*'
 
 **Несколько skills из одного repository — да, одной командой.**
 
-**Несколько разных repositories одной командой — нет как базовая модель** `**skills add**`**.** Каждый source добавляется отдельным вызовом:
+**Несколько разных repositories одной командой — нет как базовая модель `skills add`.** Каждый source добавляется отдельным вызовом:
 
 ```bash
 npx skills add git@gitlab.company.local:ai/security-skills.git --skill threat-model -y
