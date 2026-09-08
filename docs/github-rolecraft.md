@@ -8,13 +8,13 @@
 
 ## Установка CLI
 
-```
+```bash
 npx rolecraft --help
 ```
 
 или:
 
-```
+```bash
 npm install -g rolecraft
 ```
 
@@ -22,13 +22,13 @@ npm install -g rolecraft
 
 ## Установка
 
-```
+```bash
 rolecraft install ./company-skills/skills/poc-alpha --cursor
 ```
 
 Из GitLab:
 
-```
+```bash
 rolecraft install \
   git@gitlab.company.local:ai-skills/company-skills.git \
   --cursor
@@ -38,7 +38,7 @@ rolecraft install \
 
 Перед финальным PoC уточнить через:
 
-```
+```bash
 rolecraft install --help
 ```
 
@@ -46,13 +46,13 @@ rolecraft install --help
 
 ## Agent detection
 
-```
+```bash
 rolecraft setup
 ```
 
 или установка в несколько targets:
 
-```
+```bash
 rolecraft install ./company-skills/skills/poc-alpha \
   --cursor --copilot
 ```
@@ -61,7 +61,7 @@ RoleCraft заявляет поддержку 86+ агентов одной и �
 
 ## Проверка update / integrity
 
-```
+```bash
 rolecraft list
 rolecraft check
 rolecraft update poc-alpha
@@ -70,7 +70,7 @@ rolecraft verify
 
 Дополнительно, чего нет в базовом наборе `npx skills`:
 
-```
+```bash
 rolecraft doctor
 rolecraft doctor --deep
 ```
@@ -81,7 +81,7 @@ rolecraft doctor --deep
 
 ## Rollback
 
-```
+```bash
 rolecraft rollback poc-alpha
 ```
 
@@ -91,14 +91,14 @@ rolecraft rollback poc-alpha
 
 ## Bundle из нескольких sources
 
-```
+```bash
 rolecraft bundle --help
 rolecraft bundle create --help
 ```
 
 Установка сразу из нескольких источников одной командой (то, чего у `npx skills` нет вообще — там `install` принимает только один источник за раз):
 
-```
+```bash
 rolecraft bundle owner/security-skills owner/developer-skills owner/sales-skills --dry-run
 rolecraft bundle owner/security-skills owner/developer-skills owner/sales-skills --cursor
 ```
@@ -107,7 +107,7 @@ rolecraft bundle owner/security-skills owner/developer-skills owner/sales-skills
 
 Второй режим — установка из файла-манифеста, что удобно для распространения "утверждённого набора" внутри компании:
 
-```
+```bash
 rolecraft bundle create company-baseline    # создаёт company-baseline.json
 ```
 
@@ -126,7 +126,7 @@ rolecraft bundle create company-baseline    # создаёт company-baseline.js
 
 Отредактируйте `skills`, закоммитьте файл в GitLab-репозиторий рядом со скиллами — и любой сотрудник ставит весь согласованный набор одной командой:
 
-```
+```bash
 rolecraft bundle company-baseline.json
 ```
 
@@ -136,7 +136,7 @@ rolecraft bundle company-baseline.json
 
 ## CI restore
 
-```
+```bash
 rolecraft ci
 ```
 
@@ -154,7 +154,7 @@ rolecraft ci
 Эти возможности стоит включить в PoC отдельным пунктом, так как именно они формируют разницу в пользу RoleCraft (или, если окажутся не нужны — аргумент в пользу `npx skills` как более простого инструмента).
 
 ### MCP-серверы в одной команде со скиллом
-```
+```shell
 rolecraft install ./company-skills/skills/poc-alpha --cursor   # ставит скилл И его MCP-сервер разом
 rolecraft mcp search postgres
 rolecraft mcp check
@@ -162,26 +162,26 @@ rolecraft mcp check
 Скилл может декларировать нужный MCP-сервер прямо в frontmatter `SKILL.md` (`mcp_servers:`), и `install`/`bundle` поставят и то, и другое одной командой. У `npx skills` MCP-поддержки нет вообще — это отдельная категория различий, а не просто "ещё одна фича".
 
 ### Тестирование качества скилла (assertions)
-```
+```shell
 rolecraft test ./company-skills/skills/poc-alpha
 ```
 Позволяет прогнать скилл через набор проверок/assertion-ов перед тем, как публиковать его для всей компании — полезно встроить в CI-пайплайн репозитория со скиллами как gate перед мержем в main.
 
 ### Diff и Compose
-```
+```shell
 rolecraft diff --help
 rolecraft compose --help
 ```
 Команды добавлены в релизе v2.0.0. `diff`, судя по системе профилей, используется для сравнения текущего состояния установленных скиллов с сохранённым профилем (см. `profileDiff` в Node.js API) — то есть можно проверить, что реально стоит на машине сотрудника, отличается ли от корпоративного baseline. Точный синтаксис `compose` стоит уточнить через `--help`, документация по нему в README менее подробная, чем по `bundle`.
 
 ### Просмотр без установки
-```
+```shell
 rolecraft use owner/security-skills
 ```
 Показывает содержимое скилла (файлы) без реальной установки — удобно для ревью нового скилла из чужого репозитория перед тем, как одобрить его для company-baseline.
 
 ### Публикация и поиск через GitHub-реестр
-```
+```shell
 rolecraft search react --registry
 rolecraft search react-rules          # поиск по GitHub напрямую, без реестра
 rolecraft publish ./my-skill/ --repo user/my-skill
@@ -201,13 +201,13 @@ rolecraft profile import <file>
 В отличие от `bundle` (который просто устанавливает список источников), `profile` фиксирует **фактическое состояние** — что уже стоит на машине для скольких агентов — и позволяет сравнить (`diff`) или воспроизвести это состояние на другой машине.
 
 ### Генерация AGENTS.md
-```
+```shell
 rolecraft agents-xml --write
 ```
 Генерирует XML-описание скиллов, совместимое с Claude Code, прямо в `AGENTS.md` — полезно, если в компании уже есть конвенция документировать доступные агенту инструкции в этом файле.
 
 ### Shell-автодополнение
-```
+```shell
 rolecraft completions bash
 rolecraft completions zsh
 rolecraft completions fish

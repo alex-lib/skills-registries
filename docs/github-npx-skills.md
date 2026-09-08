@@ -12,7 +12,7 @@
 
 Пример команд CLI-инструмента `skills`:
 
-```
+```bash
 npx skills add git@gitlab.company.local:ai/company-skills.git --list
 npx skills add git@gitlab.company.local:ai/company-skills.git --skill code-review
 ```
@@ -44,7 +44,7 @@ npx skills add git@gitlab.company.local:ai/company-skills.git --skill code-revie
 
 Структура:
 
-```
+```text
 company-skills/
 ├── README.md
 ├── skills/
@@ -74,7 +74,7 @@ company-skills/
 
 Если symlink не нужен или ОС/политика безопасности его ограничивает:
 
-```
+```bash
 npx skills add <repository> --skill code-review --copy
 ```
 
@@ -94,7 +94,7 @@ Junction — это способ обойти это ограничение: о�
 
 В `skills` есть таблица поддерживаемых agents и известных путей. Например, installer проверяет наличие стандартных директорий агента (`~/.cursor`, `~/.claude`, `~/.codex` и т.п.), после чего предлагает найденные агенты или позволяет указать их явно.
 
-```
+```bash
 # конкретный агент
 npx skills add <repository> --skill code-review --agent cursor
 
@@ -112,7 +112,7 @@ npx skills add <repository> --skill code-review --agent '*'
 
 Он ищет каталоги с `SKILL.md` в типовых layout, в том числе `skills/`, `.agents/skills/` и agent-specific directories. Поэтому для корпоративного репозитория лучше принять единый простой convention:
 
-```
+```text
 skills/<skill-name>/SKILL.md
 ```
 
@@ -120,7 +120,7 @@ skills/<skill-name>/SKILL.md
 
 ### Установка конкретного skill или нескольких skills
 
-```
+```bash
 # показать, что есть в репозитории
 npx skills add <repository> --list
 
@@ -143,7 +143,7 @@ npx skills add <repository> --skill '*'
 
 **Несколько разных repositories одной командой — нет как базовая модель** `**skills add**`**.** Каждый source добавляется отдельным вызовом:
 
-```
+```bash
 npx skills add git@gitlab.company.local:ai/security-skills.git --skill threat-model -y
 npx skills add git@gitlab.company.local:ai/dev-skills.git --skill code-review -y
 npx skills add git@gitlab.company.local:sales/sales-skills.git --skill account-research -y
@@ -157,7 +157,7 @@ npx skills add git@gitlab.company.local:sales/sales-skills.git --skill account-r
 
 CLI имеет отдельную команду:
 
-```
+```bash
 npx skills update
 npx skills update code-review
 npx skills update code-review security-review
@@ -165,7 +165,7 @@ npx skills update code-review security-review
 
 Также доступны scope-флаги:
 
-```
+```bash
 npx skills update -p    # project
 npx skills update -g    # global
 ```
@@ -176,7 +176,7 @@ Installer хранит метаданные установки/lock, чтобы 
 
 В GitLab/GitHub-варианте никакой отдельной публикационной платформы не требуется.
 
-```
+```text
 1. git clone company-skills
 2. создать skills/my-skill/SKILL.md
 3. локально проверить skill
@@ -202,7 +202,7 @@ Installer хранит метаданные установки/lock, чтобы 
 
 Поэтому для GitLab-варианта рекомендуемая схема при росте:
 
-```
+```text
 GitLab group: ai-skills/
 ├── engineering-skills     (например, 50–150)
 ├── security-skills        (50–150)
@@ -219,21 +219,13 @@ GitLab group: ai-skills/
 **Плюсы**
 
 - использует уже знакомую Git-инфраструктуру;
-    
 - source code и review остаются в Git;
-    
 - просто запуск/создание;
-    
 - private SSH/HTTPS access;
-    
 - выбор одного или нескольких skills;
-    
 - много поддерживаемых AI agents;
-    
 - cross-platform;
-    
 - минимальный vendor lock-in: обычный `SKILL.md` + git.
-
 
 **Минусы**
 
@@ -244,11 +236,11 @@ GitLab group: ai-skills/
 
 Важно понимать, что каталог придется поддерживать самим. Именно здесь специализированные registries начинают давать реальное преимущество.
 
-## 0. Что проверяем
+## Что проверяем
 
 Базовый и наиболее дешёвый вариант:
 
-```
+```text
 GitHub = centralized storage + permissions + review
 npx skills = discovery inside repo + install/update into agents
 ```
@@ -273,19 +265,19 @@ git --version
 
 Проверить, есть ли уже ключи:
 
-```
+```bash
 ls -la ~/.ssh
 ```
 
 Если для GitHub ещё нет отдельного ключа — создать новый (не переиспользовать рабочие/deploy-ключи, чтобы не путать окружения):
 
-```
+```bash
 ssh-keygen -t ed25519 -C "github-personal" -f ~/.ssh/id_ed25519_personal
 ```
 
 Скопировать публичный ключ:
 
-```
+```bash
 pbcopy < ~/.ssh/id_ed25519_personal.pub
 ```
 
@@ -293,7 +285,7 @@ pbcopy < ~/.ssh/id_ed25519_personal.pub
 
 Прописать, чтобы SSH использовал именно этот ключ для github.com:
 
-```
+```bash
 cat >> ~/.ssh/config << 'EOF'
 
 Host github.com
@@ -308,48 +300,48 @@ EOF
 
 Проверить:
 
-```
+```bash
 ssh -T git@github.com
 ```
 
 Ожидается:
 
-```
+```text
 Hi <ваш_логин>! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ### 1.2 Создать репозиторий на GitHub
 
 1. github.com → **+** → **New repository**.
-2. Repository name: `registry-skills-github-npx-skills` (или как вам удобно).
+2. Repository name: `skills-registries` (или как вам удобно).
 3. **Private**.
 4. Можно сразу поставить галочку **Add a README file** — так репозиторий не будет пустым и его сразу можно клонировать.
 5. **Create repository**.
 
 ### 1.3 Склонировать репозиторий локально
 
-```
-git clone git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git
+```bash
+git clone git@github.com:ВАШ_ЛОГИН/skills-registries.git
 cd registry-skills-github-npx-skills
 ```
 
 Проверить, что репозиторий доступен по git:
 
-```
-git ls-remote git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git
+```bash
+git ls-remote git@github.com:ВАШ_ЛОГИН/skills-registries.git
 ```
 
 Если команда отработала без ошибок — доступ настроен верно.
 
 ### 1.4 Создать структуру скилов
 
-```
+```bash
 mkdir -p skills/poc-alpha skills/poc-beta skills/poc-gamma
 ```
 
 В каждую папку — файл `SKILL.md`, например `skills/poc-alpha/SKILL.md`:
 
-```
+```text
 ---
 name: poc-alpha
 description: Тестовый скил для проверки установки
@@ -363,7 +355,7 @@ description: Тестовый скил для проверки установк�
 
 ### 1.5 Закоммитить и запушить
 
-```
+```bash
 git add .
 git commit -m "Initial PoC skills"
 git push -u origin main
@@ -390,7 +382,7 @@ git push -u origin main
 
 Это позволяет проверить installer отдельно от сети и auth.
 
-```
+```bash
 cd /path/to/company-skills
 npx skills add . --list
 ```
@@ -399,13 +391,13 @@ npx skills add . --list
 
 ### Установка одного
 
-```
+```bash
 npx skills add . --skill poc-alpha --agent claude-code -y
 ```
 
 ### Нескольких
 
-```
+```bash
 npx skills add . \
   --skill poc-alpha \
   --skill poc-beta \
@@ -416,7 +408,7 @@ npx skills add . \
 
 В PowerShell перенос строки — backtick:
 
-```
+```bash
 npx skills add . `
   --skill poc-alpha `
   --skill poc-beta `
@@ -429,13 +421,13 @@ npx skills add . `
 
 Используйте:
 
-```
+```text
 --skill poc-alpha
 ```
 
 а не:
 
-```
+```text
 --skill=poc-alpha
 ```
 
@@ -447,34 +439,34 @@ npx skills add . `
 
 По умолчанию:
 
-```
+```bash
 npx skills add . --skill poc-alpha --agent claude-code -y
 ```
 
 Проверка macOS/Linux:
 
-```
+```bash
 find .agents/skills -maxdepth 2 -type f -o -type l
 ls -la .claude/skills
 ```
 
 Проверка PowerShell:
 
-```
+```shell
 Get-ChildItem .agents\skills -Recurse
 Get-ChildItem .claude\skills -Force
 ```
 
 Ожидаемая идея:
 
-```
+```text
 .agents/skills/poc-alpha/      ← canonical copy
 .claude/skills/poc-alpha       ← link/junction или доступ через agent path
 ```
 
 ### Принудительно проверить copy mode
 
-```
+```bash
 npx skills add . --skill poc-alpha --agent claude-code --copy -y
 ```
 
@@ -488,7 +480,7 @@ npx skills add . --skill poc-alpha --agent claude-code --copy -y
 
 Запустите интерактивно:
 
-```
+```bash
 npx skills add . --skill poc-alpha
 ```
 
@@ -496,7 +488,7 @@ npx skills add . --skill poc-alpha
 
 Затем повторите с явным target:
 
-```
+```bash
 npx skills add . --skill poc-alpha -a cursor -y
 ```
 
@@ -508,17 +500,17 @@ npx skills add . --skill poc-alpha -a cursor -y
 
 ### Список
 
-```
+```bash
 npx skills add \
-  git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git \
+  git@github.com:ВАШ_ЛОГИН/skills-registries.git \
   --list
 ```
 
 ### Один skill
 
-```
+```bash
 npx skills add \
-  git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git \
+  git@github.com:ВАШ_ЛОГИН/skills-registries.git \
   --skill poc-alpha \
   --agent cursor \
   -y
@@ -526,9 +518,9 @@ npx skills add \
 
 ### Несколько выбранных
 
-```
+```bash
 npx skills add \
-  git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git \
+  git@github.com:ВАШ_ЛОГИН/skills-registries.git \
   --skill poc-alpha \
   --skill poc-gamma \
   --agent claude-code \
@@ -544,9 +536,9 @@ npx skills add \
 
 ### Шаг 1. Установить V1
 
-```
+```bash
 npx skills add \
-  git@github.com:ВАШ_ЛОГИН/registry-skills-github-npx-skills.git \
+  git@github.com:ВАШ_ЛОГИН/skills-registries.git \
   --skill poc-alpha \
   --agent cursor \
   -y
@@ -556,7 +548,7 @@ npx skills add \
 
 ### Шаг 2. Изменение и публикация V2
 
-```
+```text
 git checkout -b update/poc-alpha-v2
 # изменить Тело скила — инструкции для агента. -> Тело скила — инструкции для агента V2. в skills/poc-alpha/SKILL.md
 git add skills/poc-alpha/SKILL.md
@@ -568,13 +560,13 @@ git push origin update/poc-alpha-v2
 
 ### Шаг 3. Consumer обновляет
 
-```
+```bash
 npx skills update poc-alpha -p
 ```
 
 Если тестировали global scope:
 
-```
+```bash
 npx skills update poc-alpha -g
 ```
 

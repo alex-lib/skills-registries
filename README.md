@@ -47,7 +47,7 @@
 
 Пример команд CLI-инструмента `skills`:
 
-```
+```bash
 npx skills add git@gitlab.company.local:ai/company-skills.git --list
 npx skills add git@gitlab.company.local:ai/company-skills.git --skill code-review
 ```
@@ -79,7 +79,7 @@ npx skills add git@gitlab.company.local:ai/company-skills.git --skill code-revie
 
 Структура:
 
-```
+```text
 company-skills/
 ├── README.md
 ├── skills/
@@ -109,7 +109,7 @@ company-skills/
 
 Если symlink не нужен или ОС/политика безопасности его ограничивает:
 
-```
+```bash
 npx skills add <repository> --skill code-review --copy
 ```
 
@@ -129,7 +129,7 @@ Junction — это способ обойти это ограничение: о�
 
 В `skills` есть таблица поддерживаемых agents и известных путей. Например, installer проверяет наличие стандартных директорий агента (`~/.cursor`, `~/.claude`, `~/.codex` и т.п.), после чего предлагает найденные агенты или позволяет указать их явно.
 
-```
+```bash
 # конкретный агент
 npx skills add <repository> --skill code-review --agent cursor
 
@@ -147,7 +147,7 @@ npx skills add <repository> --skill code-review --agent '*'
 
 Он ищет каталоги с `SKILL.md` в типовых layout, в том числе `skills/`, `.agents/skills/` и agent-specific directories. Поэтому для корпоративного репозитория лучше принять единый простой convention:
 
-```
+```text
 skills/<skill-name>/SKILL.md
 ```
 
@@ -155,7 +155,7 @@ skills/<skill-name>/SKILL.md
 
 ### 4.6 Установка конкретного skill или нескольких skills
 
-```
+```bash
 # показать, что есть в репозитории
 npx skills add <repository> --list
 
@@ -178,7 +178,7 @@ npx skills add <repository> --skill '*'
 
 **Несколько разных repositories одной командой — нет как базовая модель** `**skills add**`**.** Каждый source добавляется отдельным вызовом:
 
-```
+```bash
 npx skills add git@gitlab.company.local:ai/security-skills.git --skill threat-model -y
 npx skills add git@gitlab.company.local:ai/dev-skills.git --skill code-review -y
 npx skills add git@gitlab.company.local:sales/sales-skills.git --skill account-research -y
@@ -192,7 +192,7 @@ npx skills add git@gitlab.company.local:sales/sales-skills.git --skill account-r
 
 CLI имеет отдельную команду:
 
-```
+```bash
 npx skills update
 npx skills update code-review
 npx skills update code-review security-review
@@ -200,7 +200,7 @@ npx skills update code-review security-review
 
 Также доступны scope-флаги:
 
-```
+```bash
 npx skills update -p    # project
 npx skills update -g    # global
 ```
@@ -211,7 +211,7 @@ Installer хранит метаданные установки/lock, чтобы 
 
 В GitLab/GitHub-варианте никакой отдельной публикационной платформы не требуется.
 
-```
+```text
 1. git clone company-skills
 2. создать skills/my-skill/SKILL.md
 3. локально проверить skill
@@ -237,7 +237,7 @@ Installer хранит метаданные установки/lock, чтобы 
 
 Поэтому для GitLab-варианта рекомендуемая схема при росте:
 
-```
+```text
 GitLab group: ai-skills/
 ├── engineering-skills     (например, 50–150)
 ├── security-skills        (50–150)
@@ -269,7 +269,6 @@ GitLab group: ai-skills/
 
 - минимальный vendor lock-in: обычный `SKILL.md` + git.
 
-
 **Минусы**
 
 - нет полноценного registry UI;
@@ -292,7 +291,7 @@ RoleCraft — это package manager / installer для AI agent skills и MCP. 
 
 RoleCraft знает стандартные skill-directories поддерживаемых agents и позволяет явно указать targets:
 
-```
+```bash
 rolecraft install ./my-skill --cursor --copilot
 rolecraft install git@gitlab.company.local:ai/skills.git --all
 ```
@@ -385,14 +384,14 @@ Skilly — open-source self-hosted registry хранилище для `SKILL.md`
 
 Архитектура использует Postgres + object storage + собственный git smart server. Для consumer-а каждый skill выглядит как отдельный git repository с аунтификацией:
 
-```
+```text
 one skill = one git repo
 one published version = immutable git tag
 ```
 
 Пользователь не обязан устанавливать отдельный Skilly CLI. В каталоге ему выдаётся команда вида:
 
-```
+```bash
 npx skills add \
   https://x-access-token:<token>@skilly.company.local/team-a/code-review.git#v1.2.0
 ```
@@ -442,7 +441,9 @@ Self-hosted stack включает:
 
 ### Что это
 
-SkillReg — специализированный **приватный registry** (облачный сервис, SaaS) для хранения и распространения скилов внутри компании. Модель похожа на связку **Git + npm/PyPI**: исходный код скила по-прежнему разрабатывается и версионируется в обычном git-репозитории, а SkillReg берёт на себя только **слой публикации и доставки** — то есть служит "витриной" и каналом распространения уже готовых скилов, а не заменяет git.
+SkillReg — это **SaaS**, а не self-hosted решение (в отличие от Skilly) и не CLI-обвязка поверх вашего собственного git (в отличие от RoleCraft). Хранилище физически живёт на серверах SkillReg (продукт компании Kairia), вы просто заводите organization и подключаетесь к ней через CLI или Desktop App. Это меняет сам характер PoC: здесь не нужно поднимать Postgres/MinIO/ClamAV руками — вся инфраструктура уже готова, а тестировать нужно скорее governance-функции (approval, токены, версии) и то, что обязательно нужно узнать про SaaS-модель (раздел в конце гайда).
+
+https://skillreg.dev/docs
 
 #### Внедрение
 
@@ -452,9 +453,9 @@ SkillReg — специализированный **приватный registry*
 
 3. **Установка CLI разработчиками:**
 
-```
-   npm install -g @skillreg/cli
-   skillreg login
+```bash
+    npm install -g @skillreg/cli
+    skillreg login
 ```
 
 Каждый разработчик, который будет публиковать скилы, ставит CLI себе локально и логинится под корпоративной учёткой (SSO/SCIM — см. раздел "Ограничения").
@@ -465,11 +466,14 @@ SkillReg — специализированный **приватный registry*
 
 6. **Настройка CI/CD** — выдаются CI-токены для автоматической публикации новых версий скилов из pipeline (например, при мерже в main-ветку git-репозитория автоматически вызывается `skillreg push`).
 
+Необходимо понимать, что возможности приложения ограничиваются несколькими уровнями подписок (на 08.11.2026):
+![img.png](docs/pics/skillreg-subscriptions.png)![img.png](docs/pics/skilly-navigate.png)
+
 #### Как разработчику обновить скилл
 
 Разработчик работает с исходниками в обычном git-репозитории как обычно. Когда изменения готовы к публикации:
 
-```
+```bash
 skillreg push ./code-review --bump patch
 ```
 
@@ -481,7 +485,7 @@ skillreg push ./code-review --bump patch
 
 Перед реальной публикацией можно проверить, что произойдёт, не отправляя ничего на самом деле:
 
-```
+```bash
 skillreg push ./code-review --dry-run
 ```
 
@@ -505,7 +509,7 @@ SkillReg выступает **централизованным облачным 
 
 #### Discovery — как искать скилы
 
-```
+```bash
 skillreg search "code review"       # поиск по ключевым словам
 skillreg info @company/code-review  # подробности о конкретном скиле
 skillreg list --org company         # список всех скилов организации
@@ -515,7 +519,7 @@ skillreg list --org company         # список всех скилов орг�
 
 #### Установка
 
-```
+```bash
 skillreg pull @company/code-review              # последняя версия
 skillreg pull @company/code-review@1.2.0        # конкретная версия
 skillreg pull @company/code-review@^1.2.0       # semver range (совместимые обновления)
@@ -537,7 +541,7 @@ skillreg pull @company/code-review --agent all  # сразу во все под�
 
 Специально для этого есть отдельная команда:
 
-```
+```bash
 skillreg pull-all --org company --agent all
 ```
 
