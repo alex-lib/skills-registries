@@ -64,6 +64,8 @@
 
 ## 2. Базовая архитектура: GitLab/GitHub + `npx skills`
 
+https://github.com/vercel-labs/skills
+
 ### 2.1 Из чего состоит
 
 Архитектура состоит из двух обычных компонентов:
@@ -327,6 +329,8 @@ GitLab group: ai-skills/
 
 ## 3. RoleCraft - альтернативный installer поверх GitLab/GitHub
 
+https://github.com/rolecraft-sh/rolecraft/tree/main
+
 ### Что это такое
 
 RoleCraft — это package manager / installer для AI agent skills и MCP. Он принимает source (local/GitHub/GitLab/SSH/npm), разбирает `SKILL.md`, выполняет локальный security scan, размещает skill в директории выбранных agents и записывает SHA256 в lock-файл — аналогично методике, описанной в разделе про `npx skills`.
@@ -363,6 +367,8 @@ RoleCraft **не превращает GitLab/GitHub в полноценный pr
 ---
 
 ## 4. Skilly — self-hosted корпоративное хранилище
+
+https://github.com/scalefocus/skilly
 
 ### Что это
 
@@ -483,11 +489,11 @@ Self-hosted stack включает:
 
 ## 5. SkillReg — готовый SaaS private registry
 
+https://skillreg.dev/docs
+
 ### Что это
 
 SkillReg — это **SaaS**, а не self-hosted решение (в отличие от Skilly) и не CLI-обвязка поверх вашего собственного git (в отличие от RoleCraft). Хранилище физически живёт на серверах SkillReg (продукт компании Kairia), вы просто заводите organization и подключаетесь к ней через CLI или Desktop App. Это меняет сам характер PoC: здесь не нужно поднимать Postgres/MinIO/ClamAV руками — вся инфраструктура уже готова, а тестировать нужно скорее governance-функции (approval, токены, версии) и то, что обязательно нужно узнать про SaaS-модель (раздел в конце гайда).
-
-https://skillreg.dev/docs
 
 #### Внедрение
 
